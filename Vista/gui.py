@@ -1,6 +1,13 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
+from Modelo.owner import *
+from Controlador.conexion import *
+from Controlador.dao_logic import *
+
+#variables globales para el manajo de instancias de las clases importadas
+db=DataBase()
+dao = Dao(db)
 
 class MiVentanaPrincipal:
     def __init__(self,root):
@@ -36,6 +43,11 @@ class MiVentanaPrincipal:
         self.txt_caja4=Entry()
         self.txt_caja5=Entry()
         self.txt_caja6=Entry()
+
+        self.btn_nuevo=Button()
+        self.btn_buscar=Button()
+        self.btn_modificar=Button()
+        self.btn_eliminar=Button()
 
     
     def frm_cuentadante(self):
@@ -80,13 +92,35 @@ class MiVentanaPrincipal:
         self.txt_caja5=Entry(frame1,width=20,font=('Arial',12),textvariable=self.caja5)
         self.txt_caja5.grid(row=4,column=1)
 
-        lbl_celular=Label(frame1,text='Correo',width=15)
+        lbl_celular=Label(frame1,text='Celular',width=15)
         lbl_celular.grid(row=5,column=0,padx=10,pady=10)
         self.txt_caja6=Entry(frame1,width=20,font=('Arial',12),textvariable=self.caja6)
         self.txt_caja6.grid(row=5,column=1)
+        
+        #Colocar los botones en frame 2
+        self.btn_nuevo= Button(frame2,width=10,font=('Arial',12,'bold'),text='Nuevo',bg='orange',bd=5,command=self.crear_cuentadante_v)
+        self.btn_nuevo.grid(row=0,column=0,padx=10,pady=10)
+
+        self.btn_buscar= Button(frame2,width=10,font=('Arial',12,'bold'),text='Buscar',bg='orange',bd=5)
+        self.btn_buscar.grid(row=0,column=1,padx=10,pady=10)
+
+        self.btn_modificar= Button(frame2,width=10,font=('Arial',12,'bold'),text='Modificar',bg='orange',bd=5)
+        self.btn_modificar.grid(row=0,column=2,padx=10,pady=10)
+
+        self.btn_eliminar= Button(frame2,width=10,font=('Arial',12,'bold'),text='Eliminar',bg='orange',bd=5)
+        self.btn_eliminar.grid(row=0,column=3,padx=10,pady=10)
 
         ventana.focus()
         ventana.grab_set()
+    
+    def crear_cuentadante_v(self):
+        if self.caja2.get() and self.caja3.get() and self.caja4.get() and self.caja5.get() and self.caja6.get() !='':
+            #obj_cuentadante=Cuentadante(self.caja2,self.caja3,self.caja4,self.caja5,self.caja6)
+            obj_cuentadante=Cuentadante(self.caja2.get(),self.caja3.get(),self.caja4.get(),self.caja5.get(),self.caja6.get())
+            dao.crear_cuentadante(obj_cuentadante)
+        else:
+            messagebox.showerror('Error','Todos los campos son obligatorios...')
+
 
 
 
