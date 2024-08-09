@@ -48,7 +48,7 @@ class MiVentanaPrincipal:
         self.btn_buscar=Button()
         self.btn_modificar=Button()
         self.btn_eliminar=Button()
-
+        
     
     def frm_cuentadante(self):
         ventana= Toplevel(self.root)
@@ -67,15 +67,18 @@ class MiVentanaPrincipal:
         frame2=Frame(ventana,bg='CadetBlue1')
         frame2.grid(row=1,columnspan=1, sticky='nsew')
 
+        
         lbl_id=Label(frame1,text='Id',width=15)
         lbl_id.grid(row=0,column=0,padx=10,pady=10)
-        self.txt_caja1=Entry(frame1,width=20,font=('Arial',12),textvariable=self.caja1)
+        self.txt_caja1=Entry(frame1,width=20,font=('Arial',12),textvariable=self.caja1,state='readonly')
         self.txt_caja1.grid(row=0,column=1)
 
         lbl_documento=Label(frame1,text='Documento',width=15)
         lbl_documento.grid(row=1,column=0,padx=10,pady=10)
         self.txt_caja2=Entry(frame1,width=20,font=('Arial',12),textvariable=self.caja2)
         self.txt_caja2.grid(row=1,column=1)
+        self.txt_caja2.focus()
+        
 
         lbl_nombres=Label(frame1,text='Nombres',width=15)
         lbl_nombres.grid(row=2,column=0,padx=10,pady=10)
@@ -101,7 +104,7 @@ class MiVentanaPrincipal:
         self.btn_nuevo= Button(frame2,width=10,font=('Arial',12,'bold'),text='Nuevo',bg='orange',bd=5,command=self.crear_cuentadante_v)
         self.btn_nuevo.grid(row=0,column=0,padx=10,pady=10)
 
-        self.btn_buscar= Button(frame2,width=10,font=('Arial',12,'bold'),text='Buscar',bg='orange',bd=5)
+        self.btn_buscar= Button(frame2,width=10,font=('Arial',12,'bold'),text='Buscar',bg='orange',bd=5,command=self.buscar_cuentadante_v)
         self.btn_buscar.grid(row=0,column=1,padx=10,pady=10)
 
         self.btn_modificar= Button(frame2,width=10,font=('Arial',12,'bold'),text='Modificar',bg='orange',bd=5)
@@ -115,11 +118,44 @@ class MiVentanaPrincipal:
     
     def crear_cuentadante_v(self):
         if self.caja2.get() and self.caja3.get() and self.caja4.get() and self.caja5.get() and self.caja6.get() !='':
-            #obj_cuentadante=Cuentadante(self.caja2,self.caja3,self.caja4,self.caja5,self.caja6)
             obj_cuentadante=Cuentadante(self.caja2.get(),self.caja3.get(),self.caja4.get(),self.caja5.get(),self.caja6.get())
             dao.crear_cuentadante(obj_cuentadante)
+            self.limpiar()
         else:
             messagebox.showerror('Error','Todos los campos son obligatorios...')
+    
+    def buscar_cuentadante_v(self):
+        if self.caja2.get() != '':
+            cuentadante= dao.buscar_cuentadante(self.caja2.get())
+            if cuentadante != None:
+                obj_cue=Cuentadante(cuentadante[1],cuentadante[2],cuentadante[3],cuentadante[4],cuentadante[5],cuentadante[0])
+                self.caja1.set(obj_cue.id)
+                self.caja2.set(obj_cue.documento)
+                self.caja3.set(obj_cue.nombres)
+                self.caja4.set(obj_cue.apellidos)
+                self.caja5.set(obj_cue.correo)
+                self.caja6.set(obj_cue.celular)
+            else:
+                messagebox.showwarning('No encontrado','Registro no encontrado...')
+        else:
+            messagebox.showwarning('No encontrado','debe enviar un criterio de busqueda...')
+
+
+
+
+    def limpiar(self):
+        self.caja1.set('')
+        self.caja2.set('')
+        self.caja3.set('')
+        self.caja4.set('')
+        self.caja5.set('')
+        self.caja6.set('')
+    
+    
+    
+    
+    
+
 
 
 
