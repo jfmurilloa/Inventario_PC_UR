@@ -4,6 +4,7 @@ from mysql.connector import Error
 from tkinter import messagebox
 from Modelo.owner import *
 
+
 class Dao:
     def __init__(self,db):
         self.db=db
@@ -28,5 +29,32 @@ class Dao:
         except mysql.connector.Error as e:
             messagebox.showerror('Error',e)
             return None
+    
+    def modificar_cuentadante(self,obj:Cuentadante):
+        val=(obj.documento,obj.nombres,obj.apellidos,obj.correo,obj.celular,obj.id)
+        update='update cuentadante set documento= %s, nombres= %s, apellidos=%s, correo=%s, celular=%s where id= %s'
+        try:
+            self.db.cursor.execute(update,val)
+            self.db.connection.commit()
+            messagebox.showinfo('Update','El registro ha sido modificado...')
+        except mysql.connector.Error as e:
+            messagebox.showerror('Update',e)
+        
+    def eliminar_cuentadante(self,obj:Cuentadante):
+        mensaje='Esta seguro de eliminar el registro?'
+        valor= messagebox.askquestion('Eliminar',mensaje)
+        if valor == 'yes':
+            delete='delete from cuentadante where id= %s'
+            try:
+                self.db.cursor.execute(delete,(obj.id,))
+                self.db.connection.commit()
+                messagebox.showinfo('Eliminar','El registro ha sido eliminado...')
+                return True
+            except mysql.connector.Error as e:
+                messagebox.showinfo('Eliminar',e)
+                return False
+
+
+
 
 

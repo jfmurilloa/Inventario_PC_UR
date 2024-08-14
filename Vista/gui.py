@@ -24,9 +24,15 @@ class MiVentanaPrincipal:
         #menus dentro de la barra de menu
         self.cuentadanteMenu= Menu(self.barraMenu,tearoff=0)
         self.cuentadanteMenu.add_command(label='Admon_Cuentadantes',command=self.frm_cuentadante)
+        self.cuentadanteMenu.add_command(label='Salir',command=self.salir)
+
+        self.ayudaMenu=Menu(self.barraMenu,tearoff=0)
+        self.ayudaMenu.add_command(label='Acerca de...')
+        self.ayudaMenu.add_command(label='Licencia')
 
         #Agregar opciones a los menus
         self.barraMenu.add_cascade(label='Cuentadantes',menu=self.cuentadanteMenu)
+        self.barraMenu.add_cascade(label='Ayuda',menu=self.ayudaMenu)
 
         #Variables vinculadas a los Entry
         self.caja1=StringVar()
@@ -49,7 +55,11 @@ class MiVentanaPrincipal:
         self.btn_modificar=Button()
         self.btn_eliminar=Button()
         
-    
+    def salir(self):        
+        rta=messagebox.askquestion('Salir','Desea salir de la aplicación?')
+        if rta=='yes':
+            self.root.destroy()
+
     def frm_cuentadante(self):
         ventana= Toplevel(self.root)
         ventana.title('Administración de cuentadantes')
@@ -107,13 +117,14 @@ class MiVentanaPrincipal:
         self.btn_buscar= Button(frame2,width=10,font=('Arial',12,'bold'),text='Buscar',bg='orange',bd=5,command=self.buscar_cuentadante_v)
         self.btn_buscar.grid(row=0,column=1,padx=10,pady=10)
 
-        self.btn_modificar= Button(frame2,width=10,font=('Arial',12,'bold'),text='Modificar',bg='orange',bd=5)
+        self.btn_modificar= Button(frame2,width=10,font=('Arial',12,'bold'),text='Modificar',bg='orange',bd=5,command=self.modificar_cuentadante_v)
         self.btn_modificar.grid(row=0,column=2,padx=10,pady=10)
 
-        self.btn_eliminar= Button(frame2,width=10,font=('Arial',12,'bold'),text='Eliminar',bg='orange',bd=5)
+        self.btn_eliminar= Button(frame2,width=10,font=('Arial',12,'bold'),text='Eliminar',bg='orange',bd=5,command=self.eliminar_cuentadante_v)
         self.btn_eliminar.grid(row=0,column=3,padx=10,pady=10)
 
         ventana.focus()
+        self.txt_caja2.focus()
         ventana.grab_set()
     
     def crear_cuentadante_v(self):
@@ -140,8 +151,22 @@ class MiVentanaPrincipal:
         else:
             messagebox.showwarning('No encontrado','debe enviar un criterio de busqueda...')
 
+    def modificar_cuentadante_v(self):
+        if self.caja1.get() and self.caja2.get() and self.caja3.get() and self.caja4.get() and self.caja5.get() and self.caja6.get() !='':
+            obj_cuentadante= Cuentadante(self.caja2.get(),self.caja3.get(),self.caja4.get(),self.caja5.get(),self.caja6.get(),self.caja1.get())
+            dao.modificar_cuentadante(obj_cuentadante)
+            self.limpiar()
+        else:
+            messagebox.showwarning('Error','Todos los campos son obligatorios...')
 
-
+    def eliminar_cuentadante_v(self):
+        if self.caja1.get() and self.caja2.get() and self.caja3.get() and self.caja4.get() and self.caja5.get() and self.caja6.get() !='':
+            obj_cuentadante= Cuentadante(self.caja2.get(),self.caja3.get(),self.caja4.get(),self.caja5.get(),self.caja6.get(),self.caja1.get())
+            res=dao.eliminar_cuentadante(obj_cuentadante)
+            if res:
+                self.limpiar()
+        else:
+            messagebox.showwarning('Error','Todos los campos son obligatorios...')
 
     def limpiar(self):
         self.caja1.set('')
@@ -150,6 +175,7 @@ class MiVentanaPrincipal:
         self.caja4.set('')
         self.caja5.set('')
         self.caja6.set('')
+        self.txt_caja2.focus()
     
     
     
