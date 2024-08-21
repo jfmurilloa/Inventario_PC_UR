@@ -5,6 +5,7 @@ from tkinter import messagebox
 from Modelo.owner import *
 from Modelo.location import *
 from Modelo.supplier import *
+from Modelo.team import *
 
 
 class Dao:
@@ -28,6 +29,17 @@ class Dao:
         select='select * from cuentadante where documento= %s'
         try:
             self.db.cursor.execute(select,criterio)
+            obj_cue= self.db.cursor.fetchone()
+            return obj_cue
+        except mysql.connector.Error as e:
+            messagebox.showerror('Error',e)
+            return None
+    
+    def buscar_cuentadante_1(self,nom,ape):
+        val=(nom,ape)
+        select='select * from cuentadante where nombres= %s and apellidos=%s'
+        try:
+            self.db.cursor.execute(select,val)
             obj_cue= self.db.cursor.fetchone()
             return obj_cue
         except mysql.connector.Error as e:
@@ -128,6 +140,17 @@ class Dao:
             messagebox.showerror('Error',e)
             return None
     
+    def buscar_proveedor_1(self,rz):
+        criterio=(rz,)
+        select='select * from proveedor where razon_social= %s'
+        try:
+            self.db.cursor.execute(select,criterio)
+            obj_pro= self.db.cursor.fetchone()
+            return obj_pro
+        except mysql.connector.Error as e:
+            messagebox.showerror('Error',e)
+            return None
+    
     def modificar_proveedor(self,obj:Proveedor):
         val=(obj.nit,obj.razon_social,obj.direccion,obj.telefono,obj.email,obj.id)
         update='update proveedor set nit= %s, razon_social= %s, direccion=%s, telefono=%s, email=%s where id= %s'
@@ -151,6 +174,51 @@ class Dao:
             except mysql.connector.Error as e:
                 messagebox.showinfo('Eliminar',e)
                 return False
+    
+    def listar_proveedores(self):
+        select='select * from proveedor'
+        try:
+            self.db.cursor.execute(select)
+            proveedores= self.db.cursor.fetchall()
+            return proveedores
+        except mysql.connector.Error as e:
+            messagebox.showwarning('Listar',e)
+            return None
+    
+    def listar_ubicaciones(self):
+        select='select * from ubicacion'
+        try:
+            self.db.cursor.execute(select)
+            ubicaciones= self.db.cursor.fetchall()
+            return ubicaciones
+        except mysql.connector.Error as e:
+            messagebox.showwarning('Listar',e)
+            return None
+    
+    def listar_cuentadantes(self):
+        select='select * from cuentadante'
+        try:
+            self.db.cursor.execute(select)
+            cuentadantes= self.db.cursor.fetchall()
+            return cuentadantes
+        except mysql.connector.Error as e:
+            messagebox.showwarning('Listar',e)
+            return None
+    
+    #Metodos CRUD de equipo
+    def crear_equipo(self, obj:Equipo):
+        param=obj.id_cuentadante.split('_')
+        cue= self.buscar_cuentadante_1(param[0],param[1])        
+        ubi=self.buscar_ubicacion(obj.id_ubicacion)       
+        pro=self.buscar_proveedor_1(obj.id_proveedor)        
+        val=(obj.serial,obj.marca,obj.modelo,obj.tipo,obj.fecha_compra,obj.garantia,obj.clasificacion,cue[0],ubi[0],pro[0])
+        insert='insert into equipo(serial,marca,modelo,tipo,fecha_compra,garantia,clasificacion,cuentadante_id,ubicacion_id,proveedor_id) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        try:
+            self.db.cursor.execute(insert,val)
+            self.db.connection.commit()
+            messagebox.showinfo('Nuevo Registro','El equipo ha sido almacenado...')
+        except mysql.connector.Error as e:
+            messagebox.showinfo('Nuevo Registro',e)
 
 
 
