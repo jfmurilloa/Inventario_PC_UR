@@ -79,10 +79,40 @@ class MiVentanaPrincipal:
         self.btn_modificar=Button()
         self.btn_eliminar=Button()
         
-    def salir(self):        
+    
+    #metodos de validación
+    def validar_numeros(self,action,proposed_text,current_text):
+        if action == '1':
+            if len(current_text) > 12:
+                return False
+            return proposed_text.isdigit()
+        return True
+    
+    def validar_letras(self,action,proposed_text,current_text):
+        if action == '1':
+            if len(current_text) > 40:
+                return False
+            return all(c.isalpha() or c.isspace() for c in proposed_text)
+        return True
+    
+    def validar_fecha(self, fecha):
+        if len(fecha) >10:
+            return False
+        valores=[]
+
+        for i,char in enumerate(fecha):
+            if i in(4,7):
+                valores.append(char=='-')
+            else:
+                valores.append(char.isdecimal())
+        return all(valores)
+
+
+    def salir(self):      
         rta=messagebox.askquestion('Salir','Desea salir de la aplicación?')
         if rta=='yes':
             self.root.destroy()
+    
 
     def frm_cuentadante(self):
         ventana= Toplevel(self.root)
@@ -109,19 +139,22 @@ class MiVentanaPrincipal:
 
         lbl_documento=Label(frame1,text='Documento',width=15)
         lbl_documento.grid(row=1,column=0,padx=10,pady=10)
-        self.txt_caja2=Entry(frame1,width=20,font=('Arial',12),textvariable=self.caja2)
+        self.txt_caja2=Entry(frame1,width=20,font=('Arial',12),textvariable=self.caja2,
+                            validate='key',validatecommand=(ventana.register(self.validar_numeros),'%d','%S','%P'))
         self.txt_caja2.grid(row=1,column=1)
         self.txt_caja2.focus()
         
 
         lbl_nombres=Label(frame1,text='Nombres',width=15)
         lbl_nombres.grid(row=2,column=0,padx=10,pady=10)
-        self.txt_caja3=Entry(frame1,width=20,font=('Arial',12),textvariable=self.caja3)
+        self.txt_caja3=Entry(frame1,width=20,font=('Arial',12),textvariable=self.caja3,
+                            validate='key',validatecommand=(ventana.register(self.validar_letras),'%d','%S','%P'))
         self.txt_caja3.grid(row=2,column=1)
 
         lbl_apellidos=Label(frame1,text='Apellidos',width=15)
         lbl_apellidos.grid(row=3,column=0,padx=10,pady=10)
-        self.txt_caja4=Entry(frame1,width=20,font=('Arial',12),textvariable=self.caja4)
+        self.txt_caja4=Entry(frame1,width=20,font=('Arial',12),textvariable=self.caja4,
+                            validate='key',validatecommand=(ventana.register(self.validar_letras),'%d','%S','%P'))
         self.txt_caja4.grid(row=3,column=1)
 
         lbl_correo=Label(frame1,text='Correo',width=15)
@@ -199,6 +232,11 @@ class MiVentanaPrincipal:
         self.caja4.set('')
         self.caja5.set('')
         self.caja6.set('')
+        self.caja7.set('')
+        self.caja8.set('')
+        self.caja9.set('')
+        self.caja10.set('')
+        self.caja11.set('')
         self.txt_caja2.focus()
     
     #Formulario para ubicacion
@@ -442,10 +480,15 @@ class MiVentanaPrincipal:
         self.txt_caja5=ttk.Combobox(frame1,width=27,textvariable=self.caja5,values=tipos,state='readonly')
         self.txt_caja5.grid(row=4,column=1)
 
+        lbl_fecha_compra_a=Label(frame1,text='aaaa-mm-dd',width=15)
+        lbl_fecha_compra_a.grid(row=5,column=2,padx=10,pady=10)
+
         lbl_fecha_compra=Label(frame1,text='Fecha Compra',width=15)
         lbl_fecha_compra.grid(row=5,column=0,padx=10,pady=10)
-        self.txt_caja6=Entry(frame1,width=20,font=('Arial',12),textvariable=self.caja6)
+        self.txt_caja6=Entry(frame1,width=20,font=('Arial',12),textvariable=self.caja6,
+                            validate='key',validatecommand=(ventana.register(self.validar_fecha),'%P'))
         self.txt_caja6.grid(row=5,column=1)
+        
 
         lbl_garantia=Label(frame1,text='Garantia',width=15)
         lbl_garantia.grid(row=6,column=0,padx=10,pady=10)
